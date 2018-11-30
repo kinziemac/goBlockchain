@@ -65,7 +65,7 @@ func (mine *miningWorker) Run() interface{} {
 
 		if mine.block.ValidHash() {
 			//If I set the proof above, do I even have to do this? - Yes, mine_result isn't a block
-			mine_result.SetProof = i
+			mine_result.Proof = i
 			mine_result.Found = true
 			return *mine_result
 		}

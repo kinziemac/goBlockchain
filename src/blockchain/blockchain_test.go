@@ -4,7 +4,7 @@ import (
 	"blockchain"
 	"github.com/stretchr/testify/assert"
 	"testing"
-	"fmt"
+	// "fmt"
 	"encoding/hex"
 )
 
@@ -83,13 +83,16 @@ func TestBakerPrints(t *testing.T) {
 	b0 := blockchain.Initial(20)
 
 	b0.Mine(10)
-	fmt.Println(b0.Proof, hex.EncodeToString(b0.Hash))
+
 	b1 := b0.Next("this is an interesting message")
 	b1.Mine(1)
-	fmt.Println(b1.Proof, hex.EncodeToString(b1.Hash))
+
 	b2 := b1.Next("this is not interesting")
 	b2.Mine(1)
-	fmt.Println(b2.Proof, hex.EncodeToString(b2.Hash))
+
+	assert.Equal(t,  hex.EncodeToString(b0.Hash), "19e2d3b3f0e2ebda3891979d76f957a5d51e1ba0b43f4296d8fb37c470600000")
+	assert.Equal(t,  hex.EncodeToString(b1.Hash), "a42b7e319ee2dee845f1eb842c31dac60a94c04432319638ec1b9f989d000000")
+	assert.Equal(t,  hex.EncodeToString(b2.Hash), "6c589f7a3d2df217fdb39cd969006bc8651a0a3251ffb50470cbc9a0e4d00000")
 }
 
 func TestValidBlockChain(t *testing.T) {
@@ -104,5 +107,62 @@ func TestValidBlockChain(t *testing.T) {
 	bChain.Add(b0)
 	bChain.Add(b1)
 	bChain.Add(b2)
+	assert.Equal(t, bChain.IsValid(), true)
+}
+
+func TestInValidGeneration(t *testing.T) {
+	b0 := blockchain.Initial(19)
+	b0.Mine(15)
+	b1 := b0.Next("hello adslfjals;")
+	b1.Mine(15)
+	b1.Generation = 2
+
+	bChain := new(blockchain.Blockchain)
+	bChain.Add(b0)
+	bChain.Add(b1)
+	assert.Equal(t, bChain.IsValid(), false)
+}
+
+func TestInValidDifficulty(t *testing.T) {
+	b0 := blockchain.Initial(19)
+	b0.Mine(15)
+	b1 := b0.Next("hello adslfjals;")
+	b1.Mine(15)
+	b1.Difficulty = 2
+
+	bChain := new(blockchain.Blockchain)
+	bChain.Add(b0)
+	bChain.Add(b1)
+	assert.Equal(t, bChain.IsValid(), false)
+}
+
+func TestInValidPrevHash(t *testing.T) {
+	b0 := blockchain.Initial(19)
+	b0.Mine(15)
+	b1 := b0.Next("hello adslfjals;")
+	b1.Mine(15)
+	b1.PrevHash[10] = []byte("\x00")[0]
+
+	bChain := new(blockchain.Blockchain)
+	bChain.Add(b0)
+	bChain.Add(b1)
+	assert.Equal(t, bChain.IsValid(), false)
+}
+
+func TestInValidHash(t *testing.T) {
+	b0 := blockchain.Initial(19)
+	b0.Mine(15)
+	b1 := b0.Next("hello adslfjals;")
+	b1.Mine(15)
+	b1.Hash[8] = []byte("\x00")[0]
+
+	bChain := new(blockchain.Blockchain)
+	bChain.Add(b0)
+	bChain.Add(b1)
+	assert.Equal(t, bChain.IsValid(), false)
+}
+
+func TestInEmptyChainValid(t *testing.T) {
+	bChain := new(blockchain.Blockchain)
 	assert.Equal(t, bChain.IsValid(), true)
 }

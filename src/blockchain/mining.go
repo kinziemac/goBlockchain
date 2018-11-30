@@ -2,7 +2,6 @@ package blockchain
 
 import (
 	"work_queue"
-	"fmt"
 )
 
 type miningWorker struct {
@@ -26,7 +25,6 @@ func (blk Block) MineRange(start uint64, end uint64, workers uint64, chunks uint
 	mine_result := new(MiningResult)
 
 	for i := start; i <= end; i = i+chunk_range {
-		//is concurrent now
 		mine_worker := new(miningWorker)
 		mine_worker.start = uint64(i)
 		mine_worker.end = uint64(i+chunk_range)
@@ -44,7 +42,6 @@ func (blk Block) MineRange(start uint64, end uint64, workers uint64, chunks uint
 
 		if new_mine_result.Found {
 			queue.Shutdown()
-			fmt.Println("does it ever go here?")
 			return new_mine_result
 		}
 
@@ -65,14 +62,12 @@ func (mine *miningWorker) Run() interface{} {
 		mine.block.SetProof(i)
 
 		if mine.block.ValidHash() {
-			//If I set the proof above, do I even have to do this? - Yes, mine_result isn't a block
-			mine_result.Proof = i
+			//If I set the proof above, do I even have to do this? -> Yes, mine_result isn't a block
 			mine_result.Found = true
-			fmt.Println("found it!")
+			mine_result.Proof = i
 			return *mine_result
 		}
 	}
-
 
 	return *mine_result
 }

@@ -17,9 +17,7 @@ type Block struct {
 
 // Create new initial (generation 0) block.
 func Initial(difficulty uint8) Block {
-
 	hash := make([]byte, 32)
-
 	b := Block{
 		hash,
 		0,

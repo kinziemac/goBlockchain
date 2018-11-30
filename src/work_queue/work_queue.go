@@ -1,9 +1,5 @@
 package work_queue
 
-import (
-	// "fmt"
-)
-
 type Worker interface {
 	Run() interface{}
 }
@@ -19,8 +15,8 @@ type WorkQueue struct {
 // Create a new work queue capable of doing nWorkers simultaneous tasks, expecting to queue maxJobs tasks.
 func Create(nWorkers uint, maxJobs uint) *WorkQueue {
 	queue := new(WorkQueue)
-	//sets a buffer
 
+	//sets buffers
 	queue.Jobs = make(chan Worker, maxJobs)
 	queue.Results = make(chan interface{}, maxJobs)
 	queue.WorkerNum = nWorkers
@@ -59,14 +55,15 @@ func (queue WorkQueue) Enqueue(work Worker) {
 
 func (queue WorkQueue) Shutdown() {
 	// TODO: close .Jobs and remove all remaining jobs from the channel.
-
-		//not sure how to empty out Jobs yet
-		//hopefully emptying to new channel counts
-	for i := uint(0); i < queue.WorkerNum; i++ {
-
-			queue.StopRequests <- i
+	for i := 0; i < int(queue.WorkerNum); i++ {
+			queue.StopRequests <- uint(i)
 			// queue.StopRequestsNum++
 	}
 
 	//removes all remaining jobs from .Job channel
+	for len(queue.Jobs) > 0 {
+		<- queue.Jobs
+	}
+
+	close(queue.Jobs)
 }

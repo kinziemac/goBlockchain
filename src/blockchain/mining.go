@@ -37,7 +37,7 @@ func (blk Block) MineRange(start uint64, end uint64, workers uint64, chunks uint
 		queue.Enqueue(mine_worker)
 	}
 
-	//what happens if I can't find a value?
+	//what happens if I can't find a value? haha I don't know
 	for true {
 		//chang this function: looks a too blocky
 		result := <-queue.Results

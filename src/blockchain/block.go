@@ -17,20 +17,16 @@ type Block struct {
 
 // Create new initial (generation 0) block.
 func Initial(difficulty uint8) Block {
-	t := ""
-	for i := 0; i < 32; i++ {
-	  t = t + "\x00"
-	}
+
+	hash := make([]byte, 32)
 
 	b := Block{
-		[]byte(t),
+		hash,
 		0,
 		difficulty,
 		"",
 		0,
-		[]byte(t)}
-
-	//b.Hash = b.CalcHash()
+		hash}
 
 	return b
 }
@@ -45,8 +41,6 @@ func (prev_block Block) Next(data string) Block {
 		data,
 		0,
 		prev_block.Hash}
-
-	//b.Hash = b.CalcHash()
 
 	return b
 }

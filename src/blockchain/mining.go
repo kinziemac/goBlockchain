@@ -2,12 +2,11 @@ package blockchain
 
 import (
 	"work_queue"
-	// "fmt"
+	"fmt"
 )
 
 type miningWorker struct {
 	// TODO. Should implement work_queue.Worker
-	// worker_queue.Worker
 	block Block
 	start uint64
 	end uint64
@@ -26,11 +25,11 @@ func (blk Block) MineRange(start uint64, end uint64, workers uint64, chunks uint
 	chunk_range := end / chunks
 	mine_result := new(MiningResult)
 
-	for i := start; i < chunk_range - 1; i++ {
+	for i := start; i <= end; i = i+chunk_range {
 		//is concurrent now
 		mine_worker := new(miningWorker)
-		mine_worker.start = uint64(i)*chunk_range
-		mine_worker.end = uint64(i+1)*chunk_range
+		mine_worker.start = uint64(i)
+		mine_worker.end = uint64(i+chunk_range)
 		mine_worker.block = blk
 
 		//puts into the Jobs queue
@@ -38,15 +37,17 @@ func (blk Block) MineRange(start uint64, end uint64, workers uint64, chunks uint
 	}
 
 	//what happens if I can't find a value? haha I don't know
+	//so this became an issue
 	for true {
-		//chang this function: looks a too blocky
 		result := <-queue.Results
 		new_mine_result := result.(MiningResult)
 
 		if new_mine_result.Found {
 			queue.Shutdown()
+			fmt.Println("does it ever go here?")
 			return new_mine_result
 		}
+
 	}
 
 	return *mine_result
@@ -60,16 +61,19 @@ func (mine *miningWorker) Run() interface{} {
 	mine_result.Found = false
 
 	// checking if proof value is valid
-	for i := mine.start; i < mine.end; i++ {
+	for i := mine.start; i <= mine.end; i++ {
 		mine.block.SetProof(i)
 
 		if mine.block.ValidHash() {
 			//If I set the proof above, do I even have to do this? - Yes, mine_result isn't a block
 			mine_result.Proof = i
 			mine_result.Found = true
+			fmt.Println("found it!")
 			return *mine_result
 		}
 	}
+
+
 	return *mine_result
 }
 

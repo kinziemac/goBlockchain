@@ -2,6 +2,7 @@ package blockchain
 
 import (
 	"reflect"
+	"fmt"
 )
 
 type Blockchain struct {
@@ -16,8 +17,6 @@ func (chain *Blockchain) Add(blk Block) {
 
 	//adds block to blockchain
 	chain.Chain = append(chain.Chain, blk)
-	chain.IsValid()
-
 }
 //
 // type Block struct {
@@ -39,6 +38,14 @@ func (chain Blockchain) IsValid() bool {
 		diff = chain.Chain[0].Difficulty
 	}
 
+	//not sure why first value doesn't work..
+	for i := 0; i < 32; i++ {
+	  if chain.Chain[0].PrevHash[i] != []byte("\x00")[0] {
+			fmt.Println("First Prev did not match all zeros")
+			return false
+		}
+	}
+
 
 	//checking generation and difficulty
 	for i := 0; i < len(chain.Chain); i++ {
@@ -46,33 +53,40 @@ func (chain Blockchain) IsValid() bool {
 
 		//Difficulty
 		if diff != blk.Difficulty {
+			fmt.Println("in Difficulty")
 			return false
 		}
 
 		//Generation
 		if generation != blk.Generation {
+			fmt.Println("in Generation")
 			return false
 		}
 		generation++
 
 		//Previous Hash
-		if reflect.DeepEqual(blk.PrevHash, prevHash) {
+		//something about to zeros doesn't work
+		if i > 0 && !reflect.DeepEqual(blk.PrevHash, prevHash) {
+			fmt.Println("in PrevHash")
 			return false
 		}
 		prevHash = blk.Hash
 
 		//ValidHash
-		blk.ValidHash()
+		if !blk.ValidHash() {
+			fmt.Println("in ValidHash")
+			return false
+		}
 
 		//make function for calculating Hash
 		currentHash := blk.CalcHash()
-		if reflect.DeepEqual(currentHash, blk.Hash) {
+		if !reflect.DeepEqual(currentHash, blk.Hash) {
+			fmt.Println(currentHash)
+			fmt.Println(blk.Hash)
+			fmt.Println("in CurrentHash")
 			return false
 		}
 	}
-
-
-
 
 	return true
 }

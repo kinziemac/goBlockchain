@@ -26,6 +26,7 @@ func Create(nWorkers uint, maxJobs uint) *WorkQueue {
 	queue.WorkerNum = nWorkers
 	queue.StopRequests = make(chan uint, queue.WorkerNum)
 
+
 	// TODO: initialize struct; start nWorkers workers as goroutines
 	for i := 0; i < int(nWorkers); i++ {
 		go queue.worker()
@@ -42,21 +43,13 @@ func (queue WorkQueue) worker() {
 		job := <- queue.Jobs
 		queue.Results <- job.Run()
 
-		// if queue.StopRequestsNum > 0 {
 		if len(queue.StopRequests) > 0 {
 			//can I just remove a stop Request like this?
 			<- queue.StopRequests
-			// value := <- queue.StopRequests
-			// fmt.Println("Removing stop request", value)
-			// fmt.Println("Queue Results", len(queue.Results))
 			return
 		}
 
 	}
-	// TODO: Listen on the .Jobs channel for incoming tasks. For each task...
-	// TODO: run tasks by calling .Run(),
-	// TODO: send the return value back on Results channel.
-	// TODO: Exit (return) when .Jobs is closed.
 }
 
 func (queue WorkQueue) Enqueue(work Worker) {
@@ -66,22 +59,14 @@ func (queue WorkQueue) Enqueue(work Worker) {
 
 func (queue WorkQueue) Shutdown() {
 	// TODO: close .Jobs and remove all remaining jobs from the channel.
-	// closeChannel := make(chan Worker)
 
-	//might not be able to do WorkerNum
-	// for len(queue.Jobs) > 0 {
 		//not sure how to empty out Jobs yet
 		//hopefully emptying to new channel counts
-
 	for i := uint(0); i < queue.WorkerNum; i++ {
+
 			queue.StopRequests <- i
 			// queue.StopRequestsNum++
 	}
 
 	//removes all remaining jobs from .Job channel
-	for len(queue.Jobs) > 0 {
-		<- queue.Jobs
-	}
-
-	close(queue.Jobs)
 }

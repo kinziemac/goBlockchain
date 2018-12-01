@@ -38,14 +38,16 @@ func (queue WorkQueue) worker() {
 	for true {
 		job := <- queue.Jobs
 		queue.Results <- job.Run()
-
+ 		// if queue.StopRequestsNum > 0 {
 		if len(queue.StopRequests) > 0 {
 			//can I just remove a stop Request like this?
 			<- queue.StopRequests
+			// value := <- queue.StopRequests
+			// fmt.Println("Removing stop request", value)
+			// fmt.Println("Queue Results", len(queue.Results))
 			return
 		}
-
-	}
+ 	}
 }
 
 func (queue WorkQueue) Enqueue(work Worker) {

@@ -1,9 +1,9 @@
 package blockchain
 
 import (
+	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
-	"crypto/sha256"
 )
 
 type Block struct {
@@ -61,18 +61,18 @@ func (blk Block) CalcHash() []byte {
 
 // Is this block's hash valid?
 func (blk Block) ValidHash() bool {
-	nBytes := blk.Difficulty/8
+	nBytes := blk.Difficulty / 8
 	nBits := blk.Difficulty % 8
 	zeroValues := len(blk.Hash) - int(nBytes)
 
 	//check last bytes to make sure they're 0
 	for i := zeroValues; i < len(blk.Hash); i++ {
-			if blk.Hash[i] != []byte("\x00")[0] {
-				return false
-			}
+		if blk.Hash[i] != []byte("\x00")[0] {
+			return false
+		}
 	}
 
-	if blk.Hash[zeroValues - 1] % (1 << nBits) != 0 {
+	if blk.Hash[zeroValues-1]%(1<<nBits) != 0 {
 		return false
 	}
 

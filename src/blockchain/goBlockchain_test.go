@@ -2,8 +2,10 @@ package blockchain
 
 import (
 	"blockchain"
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+
 	// "fmt"
 	"encoding/hex"
 )
@@ -23,10 +25,10 @@ func TestFirstHash(t *testing.T) {
 // TODO: some useful tests of Blocks
 func TestValidHash(t *testing.T) {
 	b0 := blockchain.Initial(19)
-  b0.SetProof(87745)
+	b0.SetProof(87745)
 
-  b1 := b0.Next("hash example 1234")
-  b1.SetProof(1407891)
+	b1 := b0.Next("hash example 1234")
+	b1.SetProof(1407891)
 
 	assert.Equal(t, b0.ValidHash(), true)
 	assert.Equal(t, b1.ValidHash(), true)
@@ -34,9 +36,9 @@ func TestValidHash(t *testing.T) {
 
 func TestNotValidHash(t *testing.T) {
 	b0 := blockchain.Initial(19)
-  b0.SetProof(87745)
-  b1 := b0.Next("hash example 1234")
-  b1.SetProof(140789)
+	b0.SetProof(87745)
+	b1 := b0.Next("hash example 1234")
+	b1.SetProof(140789)
 
 	assert.Equal(t, b0.ValidHash(), true)
 	assert.Equal(t, b1.ValidHash(), false)
@@ -44,9 +46,9 @@ func TestNotValidHash(t *testing.T) {
 
 func TestValidMine(t *testing.T) {
 	b0 := blockchain.Initial(19)
-  b0.SetProof(87745)
-  b1 := b0.Next("hash example 1234")
-  b1.SetProof(1407891)
+	b0.SetProof(87745)
+	b1 := b0.Next("hash example 1234")
+	b1.SetProof(1407891)
 
 	b2 := b1.Next("hello")
 	b2.Mine(13)
@@ -90,9 +92,9 @@ func TestBakerPrints(t *testing.T) {
 	b2 := b1.Next("this is not interesting")
 	b2.Mine(1)
 
-	assert.Equal(t,  hex.EncodeToString(b0.Hash), "19e2d3b3f0e2ebda3891979d76f957a5d51e1ba0b43f4296d8fb37c470600000")
-	assert.Equal(t,  hex.EncodeToString(b1.Hash), "a42b7e319ee2dee845f1eb842c31dac60a94c04432319638ec1b9f989d000000")
-	assert.Equal(t,  hex.EncodeToString(b2.Hash), "6c589f7a3d2df217fdb39cd969006bc8651a0a3251ffb50470cbc9a0e4d00000")
+	assert.Equal(t, hex.EncodeToString(b0.Hash), "19e2d3b3f0e2ebda3891979d76f957a5d51e1ba0b43f4296d8fb37c470600000")
+	assert.Equal(t, hex.EncodeToString(b1.Hash), "a42b7e319ee2dee845f1eb842c31dac60a94c04432319638ec1b9f989d000000")
+	assert.Equal(t, hex.EncodeToString(b2.Hash), "6c589f7a3d2df217fdb39cd969006bc8651a0a3251ffb50470cbc9a0e4d00000")
 }
 
 func TestValidBlockChain(t *testing.T) {

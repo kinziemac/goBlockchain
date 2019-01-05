@@ -8,7 +8,7 @@ type miningWorker struct {
 	// TODO. Should implement work_queue.Worker
 	block Block
 	start uint64
-	end uint64
+	end   uint64
 }
 
 type MiningResult struct {
@@ -24,10 +24,10 @@ func (blk Block) MineRange(start uint64, end uint64, workers uint64, chunks uint
 	chunk_range := end / chunks
 	mine_result := new(MiningResult)
 
-	for i := start; i <= end; i = i+chunk_range {
+	for i := start; i <= end; i = i + chunk_range {
 		mine_worker := new(miningWorker)
 		mine_worker.start = uint64(i)
-		mine_worker.end = uint64(i+chunk_range)
+		mine_worker.end = uint64(i + chunk_range)
 		mine_worker.block = blk
 
 		//puts into the Jobs queue
